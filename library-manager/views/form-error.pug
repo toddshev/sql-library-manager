@@ -1,0 +1,51 @@
+extends layout.pug
+
+block content
+
+    h1 New Book
+        form
+        h2.error Oooops!
+        ul.error
+            li Title is required
+            li Author is required
+        p
+            label(for="title") Title
+            input#title(
+            type="text" 
+            name="title"
+            )
+        p
+            label(for="author") Author
+            input#author(
+            type="text" 
+            name="author"
+            )
+        p
+            label(for="genre") Genre
+            input#genre(
+            type="text" 
+            name="genre"
+            )
+        p
+            label(for="year") Year
+            input#year(
+            type="text" 
+            name="year"
+            )
+        p
+            input(
+            value="Create New Book" 
+            type="submit"
+            )
+        p
+            a.button(href="all_books.html") Cancel
+//- doctype html
+//- html
+//-   head
+//-     title New Book
+//-     link(
+//-       href="../public/stylesheets/style.css" 
+//-       rel="stylesheet"
+//-       )
+//-   body
+    
