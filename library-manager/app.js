@@ -6,11 +6,10 @@ var logger = require('morgan');
 
 
 var indexRouter = require('./routes/index');
-var booksRouter = require('./routes/books');
 
 //Do I also need to require models/book.js?
 const Sequelize = require('./models/index.js').sequelize;
-//const routes = require('./routes/');
+//const {sequelize} = require('./models');
 //Above comment is because I'm trying to combine all routes into 1 file.
 
 //Connection is typically good
@@ -38,12 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Kept getting an error when using all routes
 
-//app.use(routes);
  app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-// app.use('/books/new', newBookRouter);
- app.use('/books', booksRouter);
-// app.use('/index', detailRouter); 
 
 
 // catch 404 and forward to error handler
@@ -52,7 +46,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   err.message = 'We are sorry, we could not find what you are looking for';
   res.render('page-not-found', {err});
-  next(createError(404));
 });
 
 // error handler

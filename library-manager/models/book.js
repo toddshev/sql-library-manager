@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Book.init({
     title: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {
@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     author: {
-      type: Sequelize.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notNull: {

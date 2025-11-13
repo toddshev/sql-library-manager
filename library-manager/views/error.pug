@@ -1,16 +1,7 @@
 extends layout.pug
 
 block content
-  h1= err.status
+  h1 Server Error
   p= err.message
-//- doctype html
-//- html
-//-   head
-//-     title Page Not Found
-//-     link(
-//-       href="../public/stylesheets/style.css" 
-//-       rel="stylesheet"
-//-       )
-//- body
-
-  
+  p 
+    a(class="button",href= "/books") Back Home
