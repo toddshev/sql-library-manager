@@ -13,7 +13,6 @@ function asyncHandler(cb) {
     }
 };
 
-
 //Landing page, re-directs to show book list
 //Status: Good
 router.get('/', asyncHandler(async (req, res) => {
@@ -23,32 +22,38 @@ router.get('/', asyncHandler(async (req, res) => {
 //List of all books - no pagination at the moment
 //Status: Good
 router.get('/books', asyncHandler(async (req,res) =>{
-    const {count, rows} = await Book.findAndCountAll();
-    let activePage = 1;
-
-    //Math/logic to calc for pagination
-    const booksPerPage = 10;
-    const numPages = Math.ceil(count / booksPerPage)
-    const pageArray = [];
-    //Creates an array of pages to send to pug to add pagination to the bottom
-    for (i=0; i<numPages; i++){
-        pageArray.push(i);
-    }    
-    const totalBooks = rows;
-    const firstBook = (activePage * booksPerPage - booksPerPage);
-    let lastBook;
-    if (totalBooks.length < (activePage *booksPerPage -1)){
-        lastBook = totalBooks.length -1;
-    }else {
-        lastBook = (activePage * booksPerPage - 1);
-    }
+     let activePage = 1;  //defaults to page 1
+     const page = Number.parseInt(req.query.page);
+     if (page){
+         activePage = page;  //if page is received via qstring, update activePage
+     }
+   
+     const booksPerPage = 10;
+     let bookOffset = (activePage-1) * booksPerPage; //adjust offset based on page num clicked
+     const numBooks = await Book.count(); //get count to determine num to display if last page
     
-    let books = [];
-
-    for (let i = firstBook; i<= lastBook; i++){
-       books.push(totalBooks[i]);
+    let booksToRender;
+    if (numBooks < (activePage * booksPerPage)){
+        booksToRender = numBooks - (activePage-1 * booksPerPage );
+    } else {
+        booksToRender = booksPerPage;
     }
 
+    const {count, rows} = await Book.findAndCountAll({
+        limit:booksToRender,
+        offset:bookOffset,
+    });
+        
+    //Math/logic to calc for pagination
+    const pageArray = [];
+    const pages = Math.ceil(count / booksPerPage);
+
+    //Creates an array of pages to send to pug to add pagination to the bottom
+    for (i=0; i<pages; i++){
+        pageArray.push(i);
+    }        
+   
+    const books = rows;
     res.render('index', {books, title: "Books", pageArray});
 }));
 
@@ -74,39 +79,6 @@ router.get('/books/search', asyncHandler(async (req, res) =>{
     });
 }));
 
-router.get('/books/page/:page', asyncHandler(async (req, res) => {
-    const {count, rows} = await Book.findAndCountAll();
-    let activePage = req.params.page;
-  
-    //Math/logic to calc for pagination
-    const booksPerPage = 10;
-    const numPages = Math.ceil(count / booksPerPage)
-    const pageArray = [];
-    //Creates an array of pages to send to pug to add pagination to the bottom
-    for (i=0; i<numPages; i++){
-        pageArray.push(i);
-    }    
-    const totalBooks = rows;
-    const firstBook = (activePage * booksPerPage - booksPerPage);
-    let lastBook;
-    if (totalBooks.length < (activePage *booksPerPage -1)){
-        lastBook = totalBooks.length -1;
-    }else {
-        lastBook = (activePage * booksPerPage - 1);
-    }
-
-    let books = [];
-
-    for (let i = firstBook; i<= lastBook; i++){
-       books.push(totalBooks[i]);
-    }
-
-    res.render('index', {
-        books, 
-        title: "Books",
-        pageArray
-    });
-}));
 
 //Renders the new-book form
 //Status: Good
