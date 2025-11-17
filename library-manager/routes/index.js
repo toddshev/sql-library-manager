@@ -13,9 +13,7 @@ function asyncHandler(cb) {
     }
 };
 
-function getBooks(page){
-    
-}
+
 //Landing page, re-directs to show book list
 //Status: Good
 router.get('/', asyncHandler(async (req, res) => {
@@ -68,7 +66,6 @@ router.get('/books/search', asyncHandler(async (req, res) =>{
             ],
         },
     });
-    //Books are fetching correctly, only display is broken
 
     res.render('index', {
         books,
