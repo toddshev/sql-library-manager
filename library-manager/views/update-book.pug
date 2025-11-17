@@ -2,30 +2,38 @@ extends layout.pug
 
 block content
     h1 Update Book
+
+    if (errors)
+        h2.error Ooops!  Error 
+        ul.error 
+            each error in errors 
+                li 
+                    =error.message 
+
     form(method= "POST" action= `/books/${book.id}`)
         p
-        label(for= book.title) Title
+        label(for= "title") Title
         input#title(
             value= book.title 
             type="text" 
             name="title"
             )
         p
-        label(for= book.author) Author
+        label(for= "author") Author
         input#author(
             value= book.author 
             type="text" 
             name="author"
             )
         p
-        label(for= book.genre) Genre
+        label(for= "genre") Genre
         input#genre(
             value= book.genre
             type="text" 
             name="genre"
             )
         p
-        label(for= book.year) Year
+        label(for= "year") Year
         input#year(
             value= book.year
             type="text" 

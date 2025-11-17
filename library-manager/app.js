@@ -4,15 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-
 var indexRouter = require('./routes/index');
 
-//Do I also need to require models/book.js?
 const Sequelize = require('./models/index.js').sequelize;
-//const {sequelize} = require('./models');
-//Above comment is because I'm trying to combine all routes into 1 file.
 
-//Connection is typically good
+//Test connection
 (async () => {
   try {
     await Sequelize.sync();

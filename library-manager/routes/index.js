@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {Book} = require('../models');
-//const {Op} = require('sequelize');
-const rl = require('node:readline/promises');
+const {Op} = require('sequelize');
 
 function asyncHandler(cb) {
   return async(req,res,next) =>{
@@ -14,17 +13,102 @@ function asyncHandler(cb) {
     }
 };
 
+function getBooks(page){
+    
+}
 //Landing page, re-directs to show book list
 //Status: Good
 router.get('/', asyncHandler(async (req, res) => {
-    res.redirect('/books');
+    res.redirect('/books/');
 }));
 
 //List of all books - no pagination at the moment
 //Status: Good
 router.get('/books', asyncHandler(async (req,res) =>{
-    const books = await Book.findAll();
-    res.render('index', {books, title: "Books"});
+    const {count, rows} = await Book.findAndCountAll();
+    let activePage = 1;
+
+    //Math/logic to calc for pagination
+    const booksPerPage = 10;
+    const numPages = Math.ceil(count / booksPerPage)
+    const pageArray = [];
+    //Creates an array of pages to send to pug to add pagination to the bottom
+    for (i=0; i<numPages; i++){
+        pageArray.push(i);
+    }    
+    const totalBooks = rows;
+    const firstBook = (activePage * booksPerPage - booksPerPage);
+    let lastBook;
+    if (totalBooks.length < (activePage *booksPerPage -1)){
+        lastBook = totalBooks.length -1;
+    }else {
+        lastBook = (activePage * booksPerPage - 1);
+    }
+    
+    let books = [];
+
+    for (let i = firstBook; i<= lastBook; i++){
+       books.push(totalBooks[i]);
+    }
+
+    res.render('index', {books, title: "Books", pageArray});
+}));
+
+//Display books based on search results
+//Status: Working okay, but pagination broke it briefly
+router.get('/books/search', asyncHandler(async (req, res) =>{
+    const {search} = req.query;
+    const books = await Book.findAll({
+        where: {
+            [Op.or]: [
+                {title: { [Op.like]: `%${search}%`} },
+                {author: { [Op.like]: `%${search}%`}},
+                {genre: { [Op.like]: `%${search}%`}},
+                {year: { [Op.like]: `%${search}%`}},
+            ],
+        },
+    });
+    //Books are fetching correctly, only display is broken
+
+    res.render('index', {
+        books,
+        title: 'Books',
+        search,
+    });
+}));
+
+router.get('/books/page/:page', asyncHandler(async (req, res) => {
+    const {count, rows} = await Book.findAndCountAll();
+    let activePage = req.params.page;
+  
+    //Math/logic to calc for pagination
+    const booksPerPage = 10;
+    const numPages = Math.ceil(count / booksPerPage)
+    const pageArray = [];
+    //Creates an array of pages to send to pug to add pagination to the bottom
+    for (i=0; i<numPages; i++){
+        pageArray.push(i);
+    }    
+    const totalBooks = rows;
+    const firstBook = (activePage * booksPerPage - booksPerPage);
+    let lastBook;
+    if (totalBooks.length < (activePage *booksPerPage -1)){
+        lastBook = totalBooks.length -1;
+    }else {
+        lastBook = (activePage * booksPerPage - 1);
+    }
+
+    let books = [];
+
+    for (let i = firstBook; i<= lastBook; i++){
+       books.push(totalBooks[i]);
+    }
+
+    res.render('index', {
+        books, 
+        title: "Books",
+        pageArray
+    });
 }));
 
 //Renders the new-book form
@@ -34,7 +118,7 @@ router.get('/books/new', asyncHandler(async (req, res) => {
 }));
 
 //Adds book to library upon form submission
-//Status: 
+//Status: Good
 router.post('/books/new', asyncHandler(async (req, res, next) => {
     let book;
     try{
@@ -52,11 +136,10 @@ router.post('/books/new', asyncHandler(async (req, res, next) => {
             throw error;
         }
     }
-
 }));
 
 //Book details
-//Status: 
+//Status: Good 
 router.get('/books/:id', asyncHandler(async (req, res) => {
     const id = req.params.id;
     const book = await Book.findByPk(id);
@@ -67,7 +150,6 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
         err.status = 404;
         throw err;
     }
-
 }));
  
 //Update Book
@@ -92,23 +174,13 @@ router.post('/books/:id', asyncHandler(async (req, res) => {
 }))
 
 //Delete book
-//Status: 
-router.post('/books/:id/delete', asyncHandler(async(req, res) => {
+//Status: Good 
+router.post('/books/:id/delete', asyncHandler(async (req, res) => {
     const id = req.params.id;
     const book = await Book.findByPk(id);
     
     await book.destroy();
     res.redirect('/books');      
 }));
-
-//For later.................
-// router.get('/books/page/:id', asyncHandler(async (req, res) => {
-//     res.render('index', {books: bookList, pages, title: "Books"})
-// }))
-
-//router.post('/books/search', asyncHandler(async (req,res) =>{
-
-//}));
-
 
 module.exports = router;

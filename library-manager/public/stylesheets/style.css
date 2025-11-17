@@ -95,3 +95,11 @@ input[type=text] {
 .error {
   color: rgb(236, 15, 15);
 }
+
+div a {
+  margin-right: 5px;
+}
+
+input.search-submit{
+  margin-left:15px;
+}
