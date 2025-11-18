@@ -14,13 +14,11 @@ function asyncHandler(cb) {
 };
 
 //Landing page, re-directs to show book list
-//Status: Good
 router.get('/', asyncHandler(async (req, res) => {
     res.redirect('/books/');
 }));
 
 //List of all books - no pagination at the moment
-//Status: Good
 router.get('/books', asyncHandler(async (req,res) =>{
      let activePage = 1;  //defaults to page 1
      const page = Number.parseInt(req.query.page);
@@ -58,7 +56,6 @@ router.get('/books', asyncHandler(async (req,res) =>{
 }));
 
 //Display books based on search results
-//Status: Working okay, but pagination broke it briefly
 router.get('/books/search', asyncHandler(async (req, res) =>{
     const {search} = req.query;
     const books = await Book.findAll({
@@ -79,15 +76,12 @@ router.get('/books/search', asyncHandler(async (req, res) =>{
     });
 }));
 
-
 //Renders the new-book form
-//Status: Good
 router.get('/books/new', asyncHandler(async (req, res) => {
     res.render('new-book', {title: "New Book" });
 }));
 
 //Adds book to library upon form submission
-//Status: Good
 router.post('/books/new', asyncHandler(async (req, res, next) => {
     let book;
     try{
@@ -108,7 +102,6 @@ router.post('/books/new', asyncHandler(async (req, res, next) => {
 }));
 
 //Book details
-//Status: Good 
 router.get('/books/:id', asyncHandler(async (req, res) => {
     const id = req.params.id;
     const book = await Book.findByPk(id);
@@ -122,7 +115,6 @@ router.get('/books/:id', asyncHandler(async (req, res) => {
 }));
  
 //Update Book
-//Status: Good 
 router.post('/books/:id', asyncHandler(async (req, res) => {
     const id = req.params.id;
     const book = await Book.findByPk(id);
@@ -143,7 +135,6 @@ router.post('/books/:id', asyncHandler(async (req, res) => {
 }))
 
 //Delete book
-//Status: Good 
 router.post('/books/:id/delete', asyncHandler(async (req, res) => {
     const id = req.params.id;
     const book = await Book.findByPk(id);
