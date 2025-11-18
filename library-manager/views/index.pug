@@ -13,7 +13,6 @@ block content
     h2 Oops! 
     p No matches found.  Please try again.
     p 
-      a(class='button', href='/books') Back Home
   else
     table
       thead
@@ -26,7 +25,7 @@ block content
         each book in books 
           tr
             td
-              a(href=`books/${book.id}`)= book.title 
+              a(href=`/books/${book.id}`)= book.title 
             td= book.author 
             td= book.genre 
             td= book.year  
